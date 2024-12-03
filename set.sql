@@ -44,6 +44,21 @@ CREATE TABLE IF NOT EXISTS registrars (
 );
 
 
+CREATE TABLE attendance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    gender ENUM('Male', 'Female', 'Other') NOT NULL,
+    contact_no VARCHAR(15) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    address TEXT NOT NULL,
+    attendance_status ENUM('Waiting', 'Present') NOT NULL,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
 -- Insert default admin credentials
 INSERT INTO admins (username, password) 
 VALUES ('rony', SHA2('rony123', 256));
