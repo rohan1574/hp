@@ -4,19 +4,40 @@ include('../../includes/db.php');
 
 // Check if the user is logged in
 if (!isset($_SESSION['student_id'])) {
-    header("Location: login.php");  // Redirect to login page if not logged in
+    header("Location: login.php");
     exit();
 }
 
 $student_id = $_SESSION['student_id'];  // Get student ID from session
 
-// Query to get student details
-$query = "SELECT * FROM users WHERE id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $student_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$student = $result->fetch_assoc();
+// Handle attendance status toggle
+if (isset($_GET['toggle_id'])) {
+    $attendance_id = $_GET['toggle_id'];
+    
+    // Fetch current attendance status
+    $query = "SELECT attendance_status FROM attendance WHERE id = ? AND student_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ii", $attendance_id, $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $attendance = $result->fetch_assoc();
+    
+    // If attendance record exists, toggle the status
+    if ($attendance) {
+        $new_status = ($attendance['attendance_status'] == 'Present') ? 'Waiting' : 'Present';
+        
+        // Update the attendance status
+        $update_query = "UPDATE attendance SET attendance_status = ? WHERE id = ? AND student_id = ?";
+        $stmt = $conn->prepare($update_query);
+        $stmt->bind_param("sii", $new_status, $attendance_id, $student_id);
+        
+        if ($stmt->execute()) {
+            // Redirect back to the dashboard after toggling
+            header("Location: dashboard.php");
+            exit();
+        }
+    }
+}
 
 // Fetch attendance records for this student
 $attendance_query = "SELECT * FROM attendance WHERE student_id = ?";
@@ -24,6 +45,14 @@ $stmt = $conn->prepare($attendance_query);
 $stmt->bind_param("i", $student_id);
 $stmt->execute();
 $attendance_result = $stmt->get_result();
+
+// Fetch student details
+$query = "SELECT * FROM users WHERE id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $student_id);
+$stmt->execute();
+$student_result = $stmt->get_result();
+$student = $student_result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -61,7 +90,7 @@ $attendance_result = $stmt->get_result();
             </header>
 
             <main class="flex-1 p-6">
-                <p>Welcome to your student dashboard. You can manage your profile, check your details, etc.</p>
+                <p>Welcome to your student dashboard. You can manage your profile, check your attendance details, etc.</p>
                 
                 <!-- Button to show attendance form -->
                 <button onclick="toggleForm()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
@@ -103,7 +132,7 @@ $attendance_result = $stmt->get_result();
                         <!-- Attendance Status -->
                         <label for="attendance_status" class="block text-gray-700 mt-4">Attendance Status:</label>
                         <select id="attendance_status" name="attendance_status" class="mt-1 block w-full p-2 border border-gray-300 rounded">
-                            <option value="Waiting">Waiting</option>
+                            <option value="Waiting" selected>Waiting</option>
                             <option value="Present">Present</option>
                         </select>
 
@@ -126,6 +155,7 @@ $attendance_result = $stmt->get_result();
                             <th class="p-2 border border-gray-300">Email</th>
                             <th class="p-2 border border-gray-300">Attendance Status</th>
                             <th class="p-2 border border-gray-300">Date</th>
+                            <th class="p-2 border border-gray-300">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -140,20 +170,21 @@ $attendance_result = $stmt->get_result();
                                 echo "<td class='p-2 border border-gray-300'>" . htmlspecialchars($attendance['email']) . "</td>";
                                 echo "<td class='p-2 border border-gray-300'>" . htmlspecialchars($attendance['attendance_status']) . "</td>";
                                 echo "<td class='p-2 border border-gray-300'>" . htmlspecialchars($attendance['date']) . "</td>";
+                                echo "<td class='p-2 border border-gray-300'>
+                                    <a href='edit_attendance.php?id=" . $attendance['id'] . "' class='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'>Edit</a>
+                                    <a href='dashboard.php?toggle_id=" . $attendance['id'] . "' class='bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600'>Toggle Status</a>
+                                    <a href='delete_attendance.php?id=" . $attendance['id'] . "' class='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600'>Delete</a>
+                                </td>";
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='7' class='p-2 text-center text-gray-500'>No attendance records found.</td></tr>";
+                            echo "<tr><td colspan='8' class='p-2 border border-gray-300 text-center'>No records found</td></tr>";
                         }
                         ?>
                     </tbody>
                 </table>
-
             </main>
         </div>
     </div>
-
 </body>
 </html>
-
-<?php $conn->close(); ?>
