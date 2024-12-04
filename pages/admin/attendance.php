@@ -16,24 +16,36 @@ $result = $stmt->get_result();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Attendance Records</title>
 </head>
+
 <body class="bg-gray-100 font-sans">
     <div class="flex h-screen">
-        <!-- Sidebar (reuse from other pages) -->
+        <!-- Sidebar -->
+        <aside class="bg-blue-900 text-white w-64 py-7 px-6 space-y-8">
+            <div class="text-center text-2xl font-bold">Admin Dashboard</div>
+            <nav class="space-y-4">
+                <a href="dashboard.php" class="block py-2.5 px-4 rounded transition hover:bg-blue-800">Dashboard</a>
+                <a href="add_event.php" class="block py-2.5 px-4 rounded transition hover:bg-blue-800">Add Event</a>
+                <a href="list_events.php" class="block py-2.5 px-4 rounded transition hover:bg-blue-800">Event List</a>
+                <a href="attendance.php" class="block py-2.5 px-4 rounded transition bg-blue-800">Attendance Records</a>
+                <a href="logout.php" class="block py-2.5 px-4 rounded transition hover:bg-blue-800">Logout</a>
+            </nav>
+        </aside>
 
-        <div class="flex-1 flex flex-col">
-            <header class="bg-white shadow-md p-4 flex justify-between items-center">
+        <!-- Main Content -->
+        <div class="flex-1 p-6">
+            <header class="bg-white shadow-md p-4 flex justify-between items-center mb-4">
                 <h1 class="text-xl font-bold">Attendance Records</h1>
             </header>
-                     <!-- class routine submit than show -->
-            <main class="flex-1 p-6">
+
+            <main class="p-6 bg-white shadow-md rounded-md">
                 <h2 class="text-2xl font-bold mb-4">Attendance List</h2>
-                
                 <table class="w-full border-collapse">
                     <thead>
                         <tr class="bg-gray-200">
@@ -70,6 +82,7 @@ $result = $stmt->get_result();
         </div>
     </div>
 </body>
+
 </html>
 
 <?php

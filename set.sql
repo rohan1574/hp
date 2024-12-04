@@ -65,20 +65,17 @@ CREATE TABLE registrations (
     FOREIGN KEY (event_id) REFERENCES events(id)
 );
 
-CREATE TABLE class_routine (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    bangla_time VARCHAR(255) NOT NULL,
-    english_time VARCHAR(255) NOT NULL,
-    math_time VARCHAR(255) NOT NULL,
-    higher_math_time VARCHAR(255) NOT NULL,
-    biology_time VARCHAR(255) NOT NULL,
-    teacher_bangla VARCHAR(255) NOT NULL,
-    teacher_english VARCHAR(255) NOT NULL,
-    teacher_math VARCHAR(255) NOT NULL,
-    teacher_higher_math VARCHAR(255) NOT NULL,
-    teacher_biology VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+CREATE TABLE `class_routine` (
+    `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `day` ENUM('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday') NOT NULL,
+    `time_start` TIME NOT NULL,    -- Start time
+    `time_end` TIME NOT NULL,      -- End time
+    `subject_name` VARCHAR(255) NOT NULL,
+    `teacher_name` VARCHAR(255) NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX (`day`, `time_start`, `time_end`)  -- Optional: You may want an index for faster queries
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 
 
