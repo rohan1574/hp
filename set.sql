@@ -58,6 +58,29 @@ CREATE TABLE attendance (
     FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE registrations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_email VARCHAR(255) NOT NULL,
+    event_id INT NOT NULL,
+    FOREIGN KEY (event_id) REFERENCES events(id)
+);
+
+CREATE TABLE class_routine (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bangla_time VARCHAR(255) NOT NULL,
+    english_time VARCHAR(255) NOT NULL,
+    math_time VARCHAR(255) NOT NULL,
+    higher_math_time VARCHAR(255) NOT NULL,
+    biology_time VARCHAR(255) NOT NULL,
+    teacher_bangla VARCHAR(255) NOT NULL,
+    teacher_english VARCHAR(255) NOT NULL,
+    teacher_math VARCHAR(255) NOT NULL,
+    teacher_higher_math VARCHAR(255) NOT NULL,
+    teacher_biology VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 
 -- Insert default admin credentials
 INSERT INTO admins (username, password) 

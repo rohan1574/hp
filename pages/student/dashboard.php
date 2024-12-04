@@ -78,6 +78,7 @@ $student = $student_result->fetch_assoc();
             <div class="text-center text-2xl font-bold">Student Dashboard</div>
             <nav class="space-y-4">
                 <a href="dashboard.php" class="block py-2.5 px-4 rounded transition hover:bg-blue-800">Dashboard</a>
+                <a href="routine.php" class="block py-2.5 px-4 rounded transition hover:bg-blue-800">Class Routine</a>
                 <a href="profile.php" class="block py-2.5 px-4 rounded transition hover:bg-blue-800">View Profile</a>
                 <a href="logout.php" class="block py-2.5 px-4 rounded transition hover:bg-blue-800">Logout</a>
             </nav>
