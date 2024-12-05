@@ -5,26 +5,22 @@ $error_message = ''; // Initialize the error message variable
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
-    $email = isset($_POST['email']) ? $_POST['email'] : '';  // Use ternary operator to check if email is set
-    $password = isset($_POST['password']) ? $_POST['password'] : '';  // Similarly for password
+    $email = $_POST['email'] ?? ''; 
+    $password = $_POST['password'] ?? '';
 
-    // SQL query to check if student exists
     $query = "SELECT * FROM users WHERE email = ?";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $email);  // 's' means the email is a string
+    $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $student = $result->fetch_assoc();
-        
-        // Check if the password matches
         if (password_verify($password, $student['password'])) {
             session_start();
-            $_SESSION['student_id'] = $student['id'];  // Store student id in session
-            $_SESSION['student_email'] = $student['email'];  // Store student email in session
-            header("Location: dashboard.php");  // Redirect to the student dashboard page
+            $_SESSION['student_id'] = $student['id'];
+            $_SESSION['student_email'] = $student['email'];
+            header("Location: dashboard.php");
             exit();
         } else {
             $error_message = "Invalid password.";
@@ -42,32 +38,113 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
     <title>Student Login</title>
-</head>
-<body class="bg-gray-100 font-sans">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/College_Full_view-1.jpg/1280px-College_Full_view-1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
 
-    <div class="max-w-md mx-auto mt-12 bg-white p-6 rounded-lg shadow-lg">
-        <h2 class="text-center text-xl font-bold mb-6">Student Login</h2>
+        /* Animation for moving colors */
+        @keyframes color-animation {
+            0% {
+                border-color: rgb(255, 0, 0);
+                background-color: rgba(255, 0, 0, 0.1);
+            }
+
+            33% {
+                border-color: rgb(0, 255, 0);
+                background-color: rgba(0, 255, 0, 0.1);
+            }
+
+            66% {
+                border-color: rgb(0, 0, 255);
+                background-color: rgba(0, 0, 255, 0.1);
+            }
+
+            100% {
+                border-color: rgb(255, 0, 0);
+                background-color: rgba(255, 0, 0, 0.1);
+            }
+        }
+
+        /* Applying animations */
+        .animated-border {
+            border-width: 6px;
+            animation: color-animation 2s linear infinite;
+        }
+
+        .animated-input:hover {
+            animation: color-animation 2s linear infinite;
+        }
+
+        /* RGB Colors for text */
+        .text-admin {
+            color: rgb(255, 0, 0);
+            /* Red */
+        }
+
+        .text-username {
+            color: rgb(0, 255, 0);
+            /* Green */
+        }
+
+        .text-password {
+            color: rgb(0, 0, 255);
+            /* Blue */
+        }
+
+        .text-login {
+            color: rgb(255, 165, 0);
+            /* Orange */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex items-center justify-center">
+    <div class="bg-white shadow-lg rounded-lg p-8 max-w-md w-full bg-opacity-90">
+    <h2 class="text-2xl font-bold text-admin text-center mb-6">Student Login</h2>
 
         <?php if (!empty($error_message)) { ?>
             <p class="text-red-500 text-center"><?php echo $error_message; ?></p>
         <?php } ?>
 
-        <form method="POST" action="login.php">
-            <div class="mb-4">
-                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" name="email" id="email" class="w-full px-4 py-2 border rounded-md" required>
+        <form method="POST" action="login.php" class="space-y-6">
+            <div>
+            <label for="email" class="block text-sm font-medium text-username mb-1">Email</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    id="email" 
+                    class="w-full border rounded p-3 focus:outline-none animated-border animated-input" 
+                    placeholder="Enter your email" 
+                    required>
             </div>
 
-            <div class="mb-4">
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" name="password" id="password" class="w-full px-4 py-2 border rounded-md" required>
+            <div>
+                <label for="password" class="block text-sm font-medium text-password mb-1">Password</label>
+                <input 
+                    type="password" 
+                    name="password" 
+                    id="password" 
+                    class="w-full border rounded p-3 focus:outline-none animated-border animated-input" 
+                    placeholder="Enter your password" 
+                    required>
             </div>
 
-            <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md">Login</button>
+            <div>
+            <label class="block text-sm font-medium text-login mb-1">Login</label>
+                <button
+                    type="submit"
+                    class="w-full border text-red-500 text-xl rounded p-3 focus:outline-none animated-border animated-input">
+                    Login
+                </button>
+            </div>
         </form>
-    </div>
 
+        <p class="mt-6 text-gray-500 text-sm text-center">© 2024 Your University. All rights reserved.</p>
+    </div>
 </body>
 </html>
